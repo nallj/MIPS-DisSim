@@ -67,7 +67,7 @@ public class helper {
         		broken=true;
         		file+="BREAK";
         		}
-        		if(instructionParts[5].equals("000000")){
+        		if(instructionParts[5].equals("000000") && instructionParts[2].equals("00000")){
         			rd=Integer.parseInt(instructionParts[3],2);
         			if(rd==0)
         			file+="NOP";
@@ -134,9 +134,9 @@ public class helper {
         			rs=Integer.parseInt(instructionParts[4], 2);
             		rt=Integer.parseInt(instructionParts[2], 2);
             		rd=Integer.parseInt(instructionParts[3],2);
-            		if(rd!=0){
+            		if(rt!=0){
             			file+="SLL "; 
-            			file+="R"+rd+", R"+rt+", "+rs;
+            			file+="R"+rd+", R"+rt+", #"+rs;
             		}
         		}
         		if(instructionParts[5].equals("000010")){
@@ -144,14 +144,14 @@ public class helper {
         			rs=Integer.parseInt(instructionParts[4], 2);
             		rt=Integer.parseInt(instructionParts[2], 2);
             		rd=Integer.parseInt(instructionParts[3],2);
-            		file+="R"+rd+", R"+rt+", "+rs;
+            		file+="R"+rd+", R"+rt+", #"+rs;
         		}
         		if(instructionParts[5].equals("000011")){
         			file+="SRA ";
         			rs=Integer.parseInt(instructionParts[4], 2);
             		rt=Integer.parseInt(instructionParts[2], 2);
             		rd=Integer.parseInt(instructionParts[3],2);
-            		file+="R"+rd+", R"+rt+", "+rs;
+            		file+="R"+rd+", R"+rt+", #"+rs;
         		}
         		if(instructionParts[5].equals("101010")){
         			file+="SLT ";
@@ -178,7 +178,7 @@ public class helper {
         		 rd=Integer.parseInt(foo, 2);
         		 if(foo.startsWith("1"))
 					 rd=rd-65536;
-        		 file+="R"+rt+", R"+rs+" #"+rd;
+        		 file+="R"+rt+", R"+rs+", #"+rd;
             	break;  
             	
             	
@@ -189,7 +189,7 @@ public class helper {
         		rd=Integer.parseInt(foo, 2);
         		if(foo.startsWith("1"))
         			rd=rd-65536;
-        		file+="R"+rt+", R"+rs+" #"+rd;
+        		file+="R"+rt+", R"+rs+", #"+rd;
         		break;  
        
                 
@@ -200,21 +200,21 @@ public class helper {
 				 rd=Integer.parseInt(foo, 2);
 				 if(foo.startsWith("1"))
 					 rd=rd-65536;
-				file+="R"+rt+", R"+rs+" #"+rd;
+				file+="R"+rt+", R"+rs+", #"+rd;
 				break; 
         case 4: file+="BEQ ";
         		rs=Integer.parseInt(instructionParts[1], 2);
         		rt=Integer.parseInt(instructionParts[2], 2);
         		foo=instructionParts[3]+instructionParts[4]+instructionParts[5];
         		foo+="00";
-        		file+="R"+rs+", R"+rt+" #"+Integer.parseInt(foo, 2);
+        		file+="R"+rs+", R"+rt+", #"+Integer.parseInt(foo, 2);
         		break;
         case 5: file+="BNE ";
 				rs=Integer.parseInt(instructionParts[1], 2);
 				rt=Integer.parseInt(instructionParts[2], 2);
 				foo=instructionParts[3]+instructionParts[4]+instructionParts[5];
 				foo+="00";
-				file+="R"+rs+", R"+rt+" #"+Integer.parseInt(foo, 2);
+				file+="R"+rs+", R"+rt+", #"+Integer.parseInt(foo, 2);
 				break;		
         case 1: 
         		
@@ -240,7 +240,10 @@ public class helper {
 			
 			foo+="00";
 			file+="BLEZ ";
-			file+="R"+rs+", #"+Integer.parseInt(foo, 2);
+			if(foo.startsWith("0"))
+				file+="R"+rs+", #"+Integer.parseInt(foo, 2);
+			else
+				file+="R"+rs+", #"+(Integer.parseInt(foo, 2) - 262144);
 			
 			break;
 		
