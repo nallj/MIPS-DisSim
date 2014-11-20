@@ -5,7 +5,7 @@ JC = javac
 	$(JC) $(JFLAGS) $*.java
 
 CLASSES = \
-	Disassembler.java \
+	DisSim.java \
 	helper.java 
 
 default: classes
