@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Queue;
 
 public class roBuff{
@@ -5,7 +7,10 @@ public class roBuff{
 	int max;
 	boolean finished = false;
 	
-	public roBuff(int m){ max = m; }
+	public roBuff(int m){
+		max = m;
+		fifo = new LinkedList<robEntry>();						// initialize table list
+	}
 	
 	public boolean push(robEntry e){
 		if(!isFull()){

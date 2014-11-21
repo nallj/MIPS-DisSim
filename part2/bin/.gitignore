@@ -1,11 +1,7 @@
-/instrQueue.class
 /DisSim.class
 /instr.class
-/instr$instrType.class
-/helper$instrType.class
-/rob.class
-/robEntry.class
-/instrQu.class
-/roBuff.class
+/instrQueue.class
 /resSt.class
+/roBuff.class
+/robEntry.class
 /rsEntry.class
