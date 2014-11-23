@@ -58,7 +58,7 @@ public class helper {
        return (file);
 	}
 	
-	
+
 	// very similar to "str disassemble(str)" - instead of formatting in strings, it passes instructions
 	public ArrayList<instr> getInstrMem(String inputfilename) throws IOException {
 		
@@ -115,6 +115,76 @@ public class helper {
         		break;
         	String word=getWord(bs);
         	
+        	//file+=word+" "+ memcounter+" "+Integer.parseInt(word, 2);
+        	//System.out.println( word+" "+memcounter+" "+Integer.parseInt(word, 2) );
+        	
+        	memcounter+=4;
+        	//file+="\n";
+        }
+        
+        fis.close();
+       //return (file);
+        return instrArr;
+	}
+	
+	
+public ArrayList<instr> getMem(String inputfilename) throws IOException {
+		
+		FileInputStream fis = null;
+		ArrayList<instr> instrArr = new ArrayList<instr>();	// collect instructions for use by the simulator
+		
+		fis = new FileInputStream(inputfilename);
+        byte[] bs= new byte[4];
+        // read bytes to the buffer
+        int n=4;
+        boolean broken=false;
+        String[] instructionParts;
+        int memcounter=600;
+        
+        while(!broken){
+        	instr subject = new instr(memcounter);	// create new Instruction at address 'memcounter'
+        	n=fis.read(bs);
+        
+        	if(n<4){
+        		System.out.println("incomplete word");
+        		fis.close();
+        		return null;
+        	}
+        	 instructionParts=formatWord(bs);
+    	
+        	//for(int i=0;i<6;i++) System.out.print(instructionParts[i] + " ");
+        		//file+=instructionParts[i]+" ";
+        	//file+=memcounter+" ";
+        	//System.out.println(memcounter + " ");
+        	
+        	broken=disassembleInstruction(instructionParts, false);
+        	
+        	// transfer data to instruction object
+        	subject.setType(typeHold);
+        	subject.setOp(file.split(" ")[0]);
+        	subject.setFriendRep(file);
+        	subject.setFields(rs, rt, rd);
+        	
+        	// clear all holding variables
+        	file = "";
+        	//f1 = 0; f2 = 0; f3 = 0;
+        	//b0 = ""; b1 = ""; b2 = ""; b3 = "";
+        	//file+="\n";
+        	memcounter+=4;
+        	
+        	//System.out.print(instrArr.size() + "(" + subject.getOp() + ") ");
+        	//subject.printInstr();
+        	instrArr.add(subject);
+       }
+        
+        while(true){ // handle NOPs after the BREAK command
+        	n=fis.read(bs);
+        	if(n!=4)
+        		break;
+        	instr subject=new instr();
+        	subject.friendRep=getWord(bs);
+        	subject.type=5;
+        	instrArr.add(subject);
         	//file+=word+" "+ memcounter+" "+Integer.parseInt(word, 2);
         	//System.out.println( word+" "+memcounter+" "+Integer.parseInt(word, 2) );
         	
@@ -308,6 +378,7 @@ public class helper {
         		rt=Integer.parseInt(instructionParts[2], 2);
         		foo=instructionParts[3]+instructionParts[4]+instructionParts[5];
         		foo+="00";
+        		rd=Integer.parseInt(foo);
         		file+="R"+rs+", R"+rt+", #"+Integer.parseInt(foo, 2);
         		typeHold = 2; // BR
         		break;
@@ -316,6 +387,7 @@ public class helper {
 				rt=Integer.parseInt(instructionParts[2], 2);
 				foo=instructionParts[3]+instructionParts[4]+instructionParts[5];
 				foo+="00";
+				rd=Integer.parseInt(foo);
 				file+="R"+rs+", R"+rt+", #"+Integer.parseInt(foo, 2);
 				typeHold = 2; // BR
 				break;		
@@ -334,6 +406,7 @@ public class helper {
 					file+="BLTZ ";
 					file+="R"+rs+", #"+Integer.parseInt(foo, 2);
 				}
+				rd=Integer.parseInt(foo);
 				typeHold = 2; // BR
 				break;
         case 6: 
@@ -343,6 +416,7 @@ public class helper {
 			foo=instructionParts[3]+instructionParts[4]+instructionParts[5];
 			
 			foo+="00";
+			rd=Integer.parseInt(foo);
 			file+="BLEZ ";
 			if(foo.startsWith("0"))
 				file+="R"+rs+", #"+Integer.parseInt(foo, 2);
@@ -358,6 +432,7 @@ public class helper {
 			foo=instructionParts[3]+instructionParts[4]+instructionParts[5];
 			
 			foo+="00";
+			rd=Integer.parseInt(foo);
 			file+="BGTZ ";
 			file+="R"+rs+", #"+Integer.parseInt(foo, 2);
 			typeHold = 2; // BR
@@ -367,6 +442,7 @@ public class helper {
 				rt=Integer.parseInt(instructionParts[2], 2);
 				foo=instructionParts[1]+instructionParts[2]+instructionParts[3]+instructionParts[4]+instructionParts[5];
 				foo+="00";
+				rd=Integer.parseInt(foo);
 				file+= Integer.parseInt(foo, 2);
 				typeHold = 2; // BR
 				break;
@@ -374,7 +450,7 @@ public class helper {
         		rs=Integer.parseInt(instructionParts[1], 2);
         		rt=Integer.parseInt(instructionParts[2], 2);
         		foo=instructionParts[3]+instructionParts[4]+instructionParts[5];
-        		
+        		rd=Integer.parseInt(foo);
         		file+="R"+rt+", "+ Integer.parseInt(foo, 2)+"(R"+rs+")";
         		typeHold = 3; // LS
         		 break;
@@ -382,7 +458,7 @@ public class helper {
         		rs=Integer.parseInt(instructionParts[1], 2);
         		rt=Integer.parseInt(instructionParts[2], 2);
         		foo=instructionParts[3]+instructionParts[4]+instructionParts[5];
-        		
+        		rd=Integer.parseInt(foo);
         		file+="R"+rt+", "+ Integer.parseInt(foo, 2)+"(R"+rs+")";
         		typeHold = 3; // LS
         		 break;

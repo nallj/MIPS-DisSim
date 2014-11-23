@@ -12,6 +12,7 @@ public class resSt{
 	
 	public boolean push(rsEntry e){ // constructor changed: function PROBABLY unstable - UNTESTED
 		if(!isFull()){
+			
 			table.add(e);
 			return true;
 		}else return false;

@@ -12,11 +12,11 @@ public class roBuff{
 		fifo = new LinkedList<robEntry>();						// initialize table list
 	}
 	
-	public boolean push(robEntry e){
-		if(!isFull()){
+	public int push(robEntry e){
+		
+			
 			fifo.add(e);
-			return true;
-		} else return false;
+			return fifo.size();
 	}
 	
 	public boolean kick(){

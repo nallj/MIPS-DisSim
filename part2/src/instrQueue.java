@@ -8,6 +8,12 @@ public class instrQueue{
 	
 	public void push(instr e){ fifo.add(e); }
 	
+	public instr pop(){
+		return fifo.remove();
+	}
+	public instr peek(){
+		return fifo.peek();
+	}
 	public boolean kick(){
 		if(fifo.remove() != null) return true;
 		else return false;

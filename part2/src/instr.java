@@ -2,8 +2,8 @@ public class instr{
 	//public enum instrType{FP, LD, SD, NA}
 	
 	int addr;
-	String op;
-	int type;					// 0 = FP, 1 = IM, 2 = BR, 3 = LS, 4 = N/A, 5 = ??
+	String op;    //op code 
+	int type;					// 0 = FP, 1 = IM, 2 = BR, 3 = LS, 4 = nop or break
 	//boolean r1, r2;			// are second and third field registers?  if not, they're immediate value
 	long f1, f2, f3;			// value of fields
 	//String b0, b1, b2, b3;	// bitfields as strings

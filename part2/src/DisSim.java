@@ -27,53 +27,104 @@ public class DisSim {
 					resSt rs = new resSt(10);			// Reservation Station (10 entries for general use)
 					roBuff rob = new roBuff(6);			// Reorder Buffer (6 entries)
 					long regs[] = new long[32];			// Register File
-					// need to implement Main Memory (instructions + data segments)
-					ArrayList<instr> instrMem = s.getInstrMem(args[1]); // Instruction Memory
 					
+					int status[]=new int[32];           // register status file, -1=ready, all other values indicate ROB
+					for (int i=0;i<32;i++)
+						status[i]=-1;
+					//set status to ready
+					
+					// need to implement Main Memory (instructions + data segments)
+					ArrayList<instr> Mem = s.getMem(args[1]); //  Memory 
+					//GETMEM returns the standard instruction array, with the NOPS after it 
+					//the NOPS have only their friendrep field set and type=5
+					long CDB=0;//data bus
 					boolean stall;
-					instr it = instrMem.get(0);
-					for(int cc = 0; cc < instrMem.size() && !rob.isDone(); cc++){ // loop through Clock Cycles; ugh, i h8 lief riet now...
-						System.out.print(cc + ") ");
+					instr it =Mem.get(0);
+					int pc=600;
+					while(true){ // loop through Clock Cycles independent of PC value 
+						System.out.print(pc + ") ");
 						it.printInstr();
 						stall = false;
 						
 						//   I. IF : Instruction Fetch
-						if(cc < instrMem.size()) iq.push(it);	// every cc, deploy 1 instr to the IQ; BROKEN
+						if(pc-600 < Mem.size() && !stall) {
+							it=Mem.get(pc-600);
 						
+								iq.push(it);	
+						}
+							
 						
 						//  II. ID : Decode & Issue
 						
-						if(!rob.isFull() && !rs.isFull()){ // if there is space available in both the ROB and the RS
+						if(!rob.isFull() && !rs.isFull()&& !iq.kick() && !stall){ // if IQ has instruction and ROB and RS are ready
 							// send operands to RS if any are available in Regs or ROB
-							//if( regs[rs].busy ){
-								
-							//}else{
-								
-							//}
 							// send future calculation's id to relevant RS operand slot so it can be found upon completion
-						}else stall = true;	// no space available means a stall
-						
-						/*
-						if( regs[rs].busy ){
+							instr instruction=iq.pop();
+							if(instruction.type==4){
+								robEntry br= new robEntry();
+								br.stage=4;// nop and break goes straight to commit stage
+								br.op=instruction.op;
+								rob.push(br);
+							}
+								
 							
-						}else{
-							if( 
-						}
-						 */
+							else{
+								
+								if(instruction.type==2){ // if branch stall
+									stall=true;
+								}
+								
+								
+								rsEntry branch= new rsEntry();
+								//00
+								robEntry br= new robEntry();
+								
+								br.op=instruction.op;
+								branch.op=instruction.op;
+								br.stage=2; //execute stage
+								branch.robIndex=rob.push(br); //adds entry to ROB, gives RS value in ROB
+								if(status[(int) instruction.f1]==-1)
+									branch.Vj=regs[(int)instruction.f1]; //register is ready, Vj holds value of operand
+								else
+									branch.Qj=status[(int)instruction.f1] ;  //register is not ready Qj holds value of index in ROB
+								
+								if(status[(int) instruction.f2]==-1)
+									branch.Vk=regs[(int)instruction.f2]; //register is ready, Vk holds value of operand
+								else
+									branch.Qk=status[(int)instruction.f2] ; 
+								
+								
+								branch.A=instruction.f3;
+								
+								rs.push(branch);
+								
+							}
+							
+				
 						
+						}
+						else 
+							stall=true;
+						
+						//end IF ID
 						
 						// III. EX : Execute
+						//for each Reservation station check if operands are available 
+						//perform operations
+					
+						//for opcode 000001 bgtz and bltz you will have to check vk to determine which comparison
+						//to use eg. bltz=vk =00000
 						
 						
 						//  IV. ME : Write Result
-						
+						//when one operation completes, check if it is the source of any other RS comparing its ID to Qs
+						//update vk or vj values with operation value
+						//write value onto CDB with ROB tab
 						
 						//   V. WB : Commit
+						//check head of the ROB if it is commit stage then write to memory
 						
-						
-						// print CC data
-						
-						it = instrMem.get(cc);
+						it = Mem.get(pc-600);
 					}
 					
 				} catch (IOException e){ e.printStackTrace(); }
