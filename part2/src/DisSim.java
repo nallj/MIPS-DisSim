@@ -32,7 +32,7 @@ public class DisSim {
 					
 					boolean stall;
 					instr it = instrMem.get(0);
-					for(int cc = 0; cc < instrMem.size() && !rob.isDone(); cc++){ // loop through Clock Cycles
+					for(int cc = 0; cc < instrMem.size() && !rob.isDone(); cc++){ // loop through Clock Cycles; ugh, i h8 lief riet now...
 						System.out.print(cc + ") ");
 						it.printInstr();
 						stall = false;
@@ -43,10 +43,23 @@ public class DisSim {
 						
 						//  II. ID : Decode & Issue
 						
-						if(!rob.isFull() && !rs.isFull()){ // BROKEN
+						if(!rob.isFull() && !rs.isFull()){ // if there is space available in both the ROB and the RS
 							// send operands to RS if any are available in Regs or ROB
+							//if( regs[rs].busy ){
+								
+							//}else{
+								
+							//}
 							// send future calculation's id to relevant RS operand slot so it can be found upon completion
-						}else stall = true;
+						}else stall = true;	// no space available means a stall
+						
+						/*
+						if( regs[rs].busy ){
+							
+						}else{
+							if( 
+						}
+						 */
 						
 						
 						// III. EX : Execute
@@ -57,6 +70,8 @@ public class DisSim {
 						
 						//   V. WB : Commit
 						
+						
+						// print CC data
 						
 						it = instrMem.get(cc);
 					}
