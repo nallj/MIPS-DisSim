@@ -38,9 +38,10 @@ public class DisSim {
 					//GETMEM returns the standard instruction array, with the NOPS after it 
 					//the NOPS have only their friendrep field set and type=5
 					long CDB=0;//data bus
+					int CDBtag=0;// tagging results on the bus
 					boolean stall;
 					instr it =Mem.get(0);
-					int pc=600;
+					int pc=0;
 					while(true){ // loop through Clock Cycles independent of PC value 
 						System.out.print(pc + ") ");
 						it.printInstr();
@@ -48,7 +49,7 @@ public class DisSim {
 						
 						//   I. IF : Instruction Fetch
 						if(pc-600 < Mem.size() && !stall) {
-							it=Mem.get(pc-600);
+							it=Mem.get(pc+1);
 						
 								iq.push(it);	
 						}
@@ -70,7 +71,8 @@ public class DisSim {
 							
 							else{
 								
-								if(instruction.type==2){ // if branch stall
+								if(instruction.type==2){ // if branch stall and kick previous instruction
+									iq.pop();
 									stall=true;
 								}
 								
@@ -83,18 +85,22 @@ public class DisSim {
 								branch.op=instruction.op;
 								br.stage=2; //execute stage
 								branch.robIndex=rob.push(br); //adds entry to ROB, gives RS value in ROB
-								if(status[(int) instruction.f1]==-1)
+								if(status[(int) instruction.f1]==-1){
 									branch.Vj=regs[(int)instruction.f1]; //register is ready, Vj holds value of operand
-								else
-									branch.Qj=status[(int)instruction.f1] ;  //register is not ready Qj holds value of index in ROB
-								
+									branch.VjSrc=true;
+								}
+								else{
+									branch.Qj=status[(int)instruction.f1] ;
+									
+																			//register is not ready Qj holds value of index in ROB
+								}
 								if(status[(int) instruction.f2]==-1)
 									branch.Vk=regs[(int)instruction.f2]; //register is ready, Vk holds value of operand
-								else
+								else{
 									branch.Qk=status[(int)instruction.f2] ; 
+								}
 								
-								
-								branch.A=instruction.f3;
+								branch.A=instruction.f3; //A holds offsets for immediate and branch
 								
 								rs.push(branch);
 								
@@ -111,6 +117,50 @@ public class DisSim {
 						// III. EX : Execute
 						//for each Reservation station check if operands are available 
 						//perform operations
+						
+						for(int i=0;i<rs.max;i++){
+							rsEntry station=rs.table.get(i);
+							if(station.Qj==CDBtag){ //check bus for matching tag
+								station.Vj=CDB;//if match set Vj
+								station.VjSrc=true;
+							}
+							if(station.Qk==CDBtag){
+								station.Vk=CDB; //same as above but for K
+								station.VkSrc=true;
+							}
+							if(station.VjSrc && station.VkSrc){//if operands are ready
+								//execute OP
+								switch (station.op){
+									case "000001":  if(station.Vk==1) {//bgez
+													if(station.Vj>=0)
+														pc+=station.A/4;
+													else pc++;
+														//BGTZ or BLTZ vk holds secondary opcode
+													}
+													else if(station.Vk==0){
+														if(station.Vj<0)
+															pc+=station.A/4;
+														else pc++;
+														
+													}
+									stall=false;//
+									break;
+								
+								
+								
+								
+								
+								}
+								
+								
+								
+								
+								
+							}
+							
+						}
+						
+						
 					
 						//for opcode 000001 bgtz and bltz you will have to check vk to determine which comparison
 						//to use eg. bltz=vk =00000
@@ -123,6 +173,9 @@ public class DisSim {
 						
 						//   V. WB : Commit
 						//check head of the ROB if it is commit stage then write to memory
+						//
+						
+						
 						
 						it = Mem.get(pc-600);
 					}

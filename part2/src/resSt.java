@@ -7,7 +7,7 @@ public class resSt{
 	public resSt(int m){
 		max = m;
 		table = new ArrayList<rsEntry>();						// initialize table list
-		for(int i = 0; i < m; i++) table.add(new rsEntry());	// initialize all RS table entry slots
+		//for(int i = 0; i < m; i++) table.add(new rsEntry());	// initialize all RS table entry slots
 	}
 	
 	public boolean push(rsEntry e){ // constructor changed: function PROBABLY unstable - UNTESTED
