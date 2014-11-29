@@ -5,7 +5,8 @@ public class rsEntry{
 	int stage;     // issue=1 execute=2 memory=3 commit=4
 	String op;       //opcode for execute stage
 	long Vj;					// Vj : value of operand j
-
+	int type      ; // instruction type 2= branch 4 nop/break
+	
 	boolean VjSrc;			// Vj : whether Vj is set or not
 	
 	long Vk;				// Vk : value of operand k

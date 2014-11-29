@@ -147,7 +147,30 @@ public class DisSim {
 						//write value onto CDB with ROB tab
 						for(int i=0;i<rs.getMax();i++){// for each RS
 							rsEntry loopRs= rs.table.get(i);
-							if(loopRs.stage==3){	//if in ME stage
+							
+							if(loopRs.stage==3 && loopRs.type!=2 && loopRs.type!=4){	//if in ME stage not branch or NOP
+								if(loopRs.type==3){//if LS
+									if(!loopRs.op.equals("101011")){ //if not STore store skips this stage
+										
+									//load takes two cycles, first cycle memory access
+										loopRs.result=mem.get((int) loopRs.A).mem;
+										loopRs.stage=7;
+									}
+									
+								}
+								else {
+									Pair result=new Pair(loopRs.robIndex,loopRs.result);
+									CDB.add(result);
+									rs.updateOperands(loopRs.robIndex,loopRs.result);
+									robEntry loopRob=rob.fifo.peek();
+									if(loopRob.robIndex==loopRs.robIndex){
+										loopRob.value=loopRs.result;
+										loopRob.stage=4;
+									}
+								}
+							}
+							
+							if(loopRs.stage==7){ //if second stage of load normal WB
 								Pair result=new Pair(loopRs.robIndex,loopRs.result);
 								CDB.add(result);
 								rs.updateOperands(loopRs.robIndex,loopRs.result);
@@ -155,11 +178,10 @@ public class DisSim {
 								if(loopRob.robIndex==loopRs.robIndex){
 									loopRob.value=loopRs.result;
 									loopRob.stage=4;
-								}
 							}
 						}
 						
-						
+						}	
 						
 						//   V. WB : Commit
 						//check head of the ROB if it is commit stage then write to memory
