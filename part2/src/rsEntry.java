@@ -1,6 +1,7 @@
 public class rsEntry{
 	boolean busy = false;	// busy?
-	int robIndex;			
+	int robIndex;	
+	int stage;
 	String op;       //opcode for execute stage
 	long Vj;					// Vj : value of operand j
 	boolean VjSrc;			// Vj : whether Vj is set or not

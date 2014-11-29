@@ -19,6 +19,18 @@ public class roBuff{
 			return fifo.size();
 	}
 	
+	public boolean isCommit(){
+		robEntry head=fifo.peek();
+		if(head!=null && head.stage==4){
+			return true;
+		}
+		return false;
+		
+		
+	}
+	public robEntry pop(){
+		return fifo.remove();
+	}
 	public boolean kick(){
 		if(fifo.remove() != null){
 			if(fifo.size() == 0) finished = true;	// if you commit the final instruction, we're done
