@@ -12,6 +12,7 @@ public class roBuff{
 		fifo = new LinkedList<robEntry>();						// initialize table list
 	}
 	
+
 	public int push(robEntry e){
 		
 			

@@ -35,8 +35,8 @@ public class DisSim {
 					ArrayList<instr> mem = s.getMem(args[1]); //  Memory 
 					//GETMEM returns the standard instruction array, with the NOPS after it 
 					//the NOPS have only their friendrep field set and type=4
-					long CDB=0;//data bus
-					int CDBtag=0;// tagging results on the bus
+					ArrayList<Pair> CDB= new ArrayList<Pair>();//data bus
+					//int CDBtag=0;// tagging results on the bus
 					boolean stall;
 					instr it = mem.get(0);
 					int cc = 0, pc = 0;
@@ -145,7 +145,19 @@ public class DisSim {
 						//when one operation completes, check if it is the source of any other RS comparing its ID to Qs
 						//update vk or vj values with operation value
 						//write value onto CDB with ROB tab
-						
+						for(int i=0;i<rs.getMax();i++){// for each RS
+							rsEntry loopRs= rs.table.get(i);
+							if(loopRs.stage==3){	//if in ME stage
+								Pair result=new Pair(loopRs.robIndex,loopRs.result);
+								CDB.add(result);
+								rs.updateOperands(loopRs.robIndex,loopRs.result);
+								robEntry loopRob=rob.fifo.peek();
+								if(loopRob.robIndex==loopRs.robIndex){
+									loopRob.value=loopRs.result;
+									loopRob.stage=4;
+								}
+							}
+						}
 						
 						
 						

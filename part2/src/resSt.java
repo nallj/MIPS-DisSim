@@ -26,7 +26,20 @@ public class resSt{
 		}
 	}
 	
-
+	public void updateOperands(int ROBindex, long value){
+		for(int i=0;i<table.size();i++){
+			rsEntry loopRS=table.get(i);
+			if((long)ROBindex==loopRS.Qj){
+				loopRS.Vj=value;
+				loopRS.VjSrc=true;
+			}
+			if((long)ROBindex==loopRS.Qk){
+				loopRS.Vk=value;
+				loopRS.VkSrc=true;
+			}
+				
+		}
+	}
 	
 	public boolean kick(int x){
 

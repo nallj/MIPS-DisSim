@@ -2,7 +2,7 @@ public class rsEntry{
 	boolean busy = false;	// busy?
 
 	int robIndex;	
-	int stage;
+	int stage;     // issue=1 execute=2 memory=3 commit=4
 	String op;       //opcode for execute stage
 	long Vj;					// Vj : value of operand j
 
@@ -18,7 +18,7 @@ public class rsEntry{
 	boolean QkSrc;			// Qk : source = {true for RS, false for ROB)
 	
 	long A;		// address offset for load store in ID, holds effective address after execution
-	
+	long result;
 	public rsEntry(){
 		busy = true; 
 		VjSrc=false;
