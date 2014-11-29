@@ -152,13 +152,13 @@ public class DisSim {
 						//   V. WB : Commit
 						//check head of the ROB if it is commit stage then write to memory
 						//
-<<<<<<< HEAD
+
 						if(rob.isCommit()){
 							
 							robEntry head=rob.pop();// get head of ROB and remove from ROB
 						
 							if(head.type==3 && head.op.equals("101011")){ //if store
-								Mem.get(head.destination).mem=head.value;
+								mem.get(head.destination).mem=head.value;
 								for(int i=0; i<rs.max;i++){
 									if(rs.table.get(i).A==head.destination && rs.table.get(i).stage==6 ){//if in dependent state
 										rs.table.get(i).stage=3;
@@ -169,12 +169,10 @@ public class DisSim {
 								regs[head.destination]=head.value;
 						}
 						
-						
-						it = Mem.get(pc-600);
-=======
+
 						
 						it = mem.get(++cc); // increment CCs, load next instruction
->>>>>>> origin/master
+
 					}
 					
 				} catch (IOException e){ e.printStackTrace(); }
