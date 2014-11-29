@@ -7,17 +7,17 @@ public class resSt{
 	public resSt(int m){
 		max = m;
 		table = new ArrayList<rsEntry>();						// initialize table list
-		for(int i = 0; i < m; i++) table.add(new rsEntry());	// initialize all RS table entry slots
+		//for(int i = 0; i < m; i++) table.add(new rsEntry());	// initialize all RS table entry slots
 	}
 	
-	public boolean push(rsEntry e){
+	public boolean push(rsEntry e){ // constructor changed: function PROBABLY unstable - UNTESTED
 		if(!isFull()){
+			
 			table.add(e);
 			return true;
 		}else return false;
 	}
 	
-<<<<<<< HEAD
 	public void freeRS(long A){
 		for(int i=0; i< table.size(); i++){
 			if (A==table.get(i).A && table.get(i).stage==4)
@@ -27,13 +27,6 @@ public class resSt{
 	}
 	
 	public boolean kick(rsEntry x){ // constructor changed: function PROBABLY unstable - UNTESTED
-=======
-	public rsEntry get(int x){
-		return table.get(x);
-	}
-	
-	public boolean kick(int x){
->>>>>>> origin/master
 		if(table.size() != 0){
 			table.remove(x);
 			return true;
@@ -47,6 +40,4 @@ public class resSt{
 		
 		return full;
 	}
-	
-	public int getMax(){ return max; }
 }

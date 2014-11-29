@@ -59,7 +59,75 @@ public class helper {
 	}
 	
 
-// very similar to "str disassemble(str)" - instead of outputting a string file, output instr ArrayList
+	// very similar to "str disassemble(str)" - instead of formatting in strings, it passes instructions
+	public ArrayList<instr> getInstrMem(String inputfilename) throws IOException {
+		
+		FileInputStream fis = null;
+		ArrayList<instr> instrArr = new ArrayList<instr>();	// collect instructions for use by the simulator
+		
+		fis = new FileInputStream(inputfilename);
+        byte[] bs= new byte[4];
+        // read bytes to the buffer
+        int n=4;
+        boolean broken=false;
+        String[] instructionParts;
+        int memcounter=600;
+        
+        while(!broken){
+        	instr subject = new instr(memcounter);	// create new Instruction at address 'memcounter'
+        	n=fis.read(bs);
+        
+        	if(n<4){
+        		System.out.println("incomplete word");
+        		fis.close();
+        		return null;
+        	}
+        	 instructionParts=formatWord(bs);
+    	
+        	//for(int i=0;i<6;i++) System.out.print(instructionParts[i] + " ");
+        		//file+=instructionParts[i]+" ";
+        	//file+=memcounter+" ";
+        	//System.out.println(memcounter + " ");
+        	
+        	broken=disassembleInstruction(instructionParts, false);
+        	
+        	// transfer data to instruction object
+        	subject.setType(typeHold);
+        	subject.setOp(file.split(" ")[0]);
+        	subject.setFriendRep(file);
+        	subject.setFields(rs, rt, rd);
+        	
+        	// clear all holding variables
+        	file = "";
+        	//f1 = 0; f2 = 0; f3 = 0;
+        	//b0 = ""; b1 = ""; b2 = ""; b3 = "";
+        	//file+="\n";
+        	memcounter+=4;
+        	
+        	//System.out.print(instrArr.size() + "(" + subject.getOp() + ") ");
+        	//subject.printInstr();
+        	instrArr.add(subject);
+       }
+        
+        while(true){ // handle NOPs after the BREAK command
+        	n=fis.read(bs);
+        	if(n!=4)
+        		break;
+        	String word=getWord(bs);
+        	
+        	//file+=word+" "+ memcounter+" "+Integer.parseInt(word, 2);
+        	//System.out.println( word+" "+memcounter+" "+Integer.parseInt(word, 2) );
+        	
+        	memcounter+=4;
+        	//file+="\n";
+        }
+        
+        fis.close();
+       //return (file);
+        return instrArr;
+	}
+	
+	
 public ArrayList<instr> getMem(String inputfilename) throws IOException {
 		
 		FileInputStream fis = null;
@@ -82,7 +150,12 @@ public ArrayList<instr> getMem(String inputfilename) throws IOException {
         		fis.close();
         		return null;
         	}
-        	instructionParts=formatWord(bs);
+        	 instructionParts=formatWord(bs);
+    	
+        	//for(int i=0;i<6;i++) System.out.print(instructionParts[i] + " ");
+        		//file+=instructionParts[i]+" ";
+        	//file+=memcounter+" ";
+        	//System.out.println(memcounter + " ");
         	
         	broken=disassembleInstruction(instructionParts, false);
         	
@@ -92,26 +165,35 @@ public ArrayList<instr> getMem(String inputfilename) throws IOException {
         	subject.setFriendRep(file);
         	subject.setFields(rs, rt, rd);
         	
-        	
-        	file = "";	// clear all holding variables
+        	// clear all holding variables
+        	file = "";
+        	//f1 = 0; f2 = 0; f3 = 0;
+        	//b0 = ""; b1 = ""; b2 = ""; b3 = "";
+        	//file+="\n";
         	memcounter+=4;
         	
+        	//System.out.print(instrArr.size() + "(" + subject.getOp() + ") ");
+        	//subject.printInstr();
         	instrArr.add(subject);
        }
         
-        while(true){	// handle NOPs after the BREAK command
+        while(true){ // handle NOPs after the BREAK command
         	n=fis.read(bs);
         	if(n!=4)
         		break;
         	instr subject=new instr();
         	subject.friendRep=getWord(bs);
-        	subject.type=4;
+        	subject.type=5;
         	instrArr.add(subject);
+        	//file+=word+" "+ memcounter+" "+Integer.parseInt(word, 2);
+        	//System.out.println( word+" "+memcounter+" "+Integer.parseInt(word, 2) );
         	
         	memcounter+=4;
+        	//file+="\n";
         }
         
         fis.close();
+       //return (file);
         return instrArr;
 	}
 	

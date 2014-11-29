@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -8,10 +9,12 @@ public class roBuff{
 	
 	public roBuff(int m){
 		max = m;
-		fifo = new LinkedList<robEntry>();	// initialize table list
+		fifo = new LinkedList<robEntry>();						// initialize table list
 	}
 	
 	public int push(robEntry e){
+		
+			
 			fifo.add(e);
 			return fifo.size();
 	}
