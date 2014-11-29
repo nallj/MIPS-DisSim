@@ -17,23 +17,11 @@ public class resSt{
 		}else return false;
 	}
 	
-<<<<<<< HEAD
-	public void freeRS(long A){
-		for(int i=0; i< table.size(); i++){
-			if (A==table.get(i).A && table.get(i).stage==4)
-				table.get(i).busy=false;
-				
-		}
-	}
-	
-	public boolean kick(rsEntry x){ // constructor changed: function PROBABLY unstable - UNTESTED
-=======
 	public rsEntry get(int x){
 		return table.get(x);
 	}
 	
 	public boolean kick(int x){
->>>>>>> origin/master
 		if(table.size() != 0){
 			table.remove(x);
 			return true;
