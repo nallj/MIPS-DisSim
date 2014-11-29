@@ -126,9 +126,9 @@ public class DisSim {
 									case "000001":  if(task.getVal('V','k')==1){ //bgez
 														if(task.getVal('V','j')>=0)
 															task.setAddr(pc+ task.getAddr()/4) ;
-														else task.setAddr(pc++); //BGTZ or BLTZ vk holds secondary opcode
+														else task.setAddr(pc++);
 														
-													}else if(task.getVal('V','k')==0){
+													}else if(task.getVal('V','k')==0){//bltz
 														if(task.getVal('V','j')<0)
 															task.setAddr(pc+ task.getAddr()/4) ;
 														else  task.setAddr(pc++);
@@ -161,7 +161,20 @@ public class DisSim {
 													task.stage=4;
 													
 													break;
-									//case "000100" : if()
+									case "000100" : if(task.getVal('V','j')==task.getVal('V','k')) //beq
+														task.setAddr(pc+ task.getAddr()/4) ;
+													else task.setAddr(pc++); 
+														task.stage=4;
+									
+													break;
+									case "000101":	if(task.getVal('V','j')!=task.getVal('V','k')) //BNE
+														task.setAddr(pc+ task.getAddr()/4) ;
+													else task.setAddr(pc++); 
+														task.stage=4;
+					
+													break;
+									//case "000110": if
+													
 									
 												   
 								
@@ -194,7 +207,7 @@ public class DisSim {
 									Pair result=new Pair(loopRs.robIndex,loopRs.result);
 									CDB.add(result);
 									rs.updateOperands(loopRs.robIndex,loopRs.result);
-									robEntry loopRob=rob.fifo.peek();
+									robEntry loopRob=rob.fifo.get(0);
 									if(loopRob.robIndex==loopRs.robIndex){
 										loopRob.value=loopRs.result;
 										loopRob.stage=4;
@@ -206,7 +219,7 @@ public class DisSim {
 								Pair result=new Pair(loopRs.robIndex,loopRs.result);
 								CDB.add(result);
 								rs.updateOperands(loopRs.robIndex,loopRs.result);
-								robEntry loopRob=rob.fifo.peek();
+								robEntry loopRob=rob.fifo.get(0);
 								if(loopRob.robIndex==loopRs.robIndex){
 									loopRob.value=loopRs.result;
 									loopRob.stage=4;
@@ -224,7 +237,7 @@ public class DisSim {
 							robEntry head=rob.pop();// get head of ROB and remove from ROB
 						
 							if(head.type==3 && head.op.equals("101011")){ //if store
-								mem.get(head.destination).mem=head.value;
+								mem.get((int)head.destination).mem=head.value;
 								for(int i=0; i<rs.max;i++){
 									if(rs.table.get(i).A==head.destination && rs.table.get(i).stage==6 ){//if in dependent state
 										rs.table.get(i).stage=3;
@@ -232,7 +245,7 @@ public class DisSim {
 								}
 							}	
 							else //if load or alu instruction
-								regs[head.destination]=head.value;
+								regs[(int)head.destination]=head.value;
 						}
 						
 
