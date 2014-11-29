@@ -17,6 +17,13 @@ public class instr{
 	// getters
 	public String getOp(){ return op; }
 	public int getType(){ return type; }
+	public long getField(int c){
+		long r = 0;
+		switch(c){	case 1: r = f1; break;
+					case 2: r = f2; break;
+					case 3: r = f3; }
+		return r;
+	}
 	public String getFriendRep() { return friendRep; }
 	public void printInstr(){ System.out.println(friendRep); }
 	
