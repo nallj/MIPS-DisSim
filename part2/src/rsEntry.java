@@ -26,10 +26,10 @@ public class rsEntry{
 		VkSrc=false;
 	}
 	
-	public rsEntry(String o, int r){
+	public rsEntry(String o, int r,int stage){
 		op = o;
 		robIndex = r;
-		
+		this.stage=stage;
 		busy = true; 
 		VjSrc=false;
 		VkSrc=false;

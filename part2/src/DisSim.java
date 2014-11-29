@@ -7,6 +7,7 @@ public class DisSim {
 	static boolean DIAG = true;
 	
 	public static void main(String[] args) {
+		System.out.println(args);
 		if (args.length>1 && !args[1].equals(null))
 			
 			if (args[0].equals("dis")) // run Disassembler
@@ -76,9 +77,10 @@ public class DisSim {
 								}
 								
 								robEntry br = new robEntry(instruction.getOp(), 2);	// new ROB extry @ execute stage
-								rsEntry branch = new rsEntry(instruction.getOp(), rob.push(br));
+										br.robIndex=cc;
+								rsEntry branch = new rsEntry(instruction.getOp(), rob.push(br),2); //new RS entry @execute
 									// push ROB entry, assign ROB index to RS entry
-								
+										branch.robIndex=cc;
 								if(status[(int) instruction.getField(1)]==-1) // if operand 1 ready
 									branch.setVj(regs[(int) instruction.getField(1)], true);
 										//register is ready, Vj holds value of operand
@@ -106,34 +108,64 @@ public class DisSim {
 						//perform operations
 						
 						for(int i=0; i<rs.getMax(); i++){
-							rsEntry task=rs.get(i);
+							rsEntry task=rs.table.get(i);
 							
-							if(task.getVal('Q','j')==CDBtag) //check bus for matching tag
+						/*the operands are now updated in MEM/WB stage
+						 * 
+						 * 	if(task.getVal('Q','j')==CDBtag) //check bus for matching tag
 								task.setVj(CDB, true); //if match set Vj
 							
 							if(task.getVal('Q','k')==CDBtag)
 								task.setVk(CDB, true); //if match set Vk
-							
+							*/
 							//if operands are ready
-							if(task.getSrc('V','j') && task.getSrc('V','k')){
+							if(task.getSrc('V','j') && task.getSrc('V','k') && task.stage==2){
 								//execute OP
 								switch( task.getOp() ){
 								
 									case "000001":  if(task.getVal('V','k')==1){ //bgez
 														if(task.getVal('V','j')>=0)
-															pc+= task.getAddr() /4;
-														else pc++; //BGTZ or BLTZ vk holds secondary opcode
+															task.setAddr(pc+ task.getAddr()/4) ;
+														else task.setAddr(pc++); //BGTZ or BLTZ vk holds secondary opcode
 														
 													}else if(task.getVal('V','k')==0){
 														if(task.getVal('V','j')<0)
-															pc+= task.getAddr() /4;
-														else pc++;
+															task.setAddr(pc+ task.getAddr()/4) ;
+														else  task.setAddr(pc++);
 													}
+													task.stage=4;
 													
-													stall=false;
 													break;
-								}
+									case "101011":
+													task.setAddr(task.getVal('V','j')+task.getAddr());//store
+													if(rob.isDependent(task.getAddr(), task.robIndex))
+														break; //if dependent, then instruction must wait since store must be done in order
+													task.stage=4;
+													
+													break;
+									case "100011": 
+													task.setAddr(task.getVal('V','j')+task.getAddr());//load
+													if(rob.isDependent(task.getAddr(), task.robIndex))
+														break; //if dependent, then instruction must wait
+													task.stage=3;
+													break;
+									case "000010": task.stage=4; //jump address is already calculated
+												   rob.getIndex(task.robIndex).stage=4;
+												  
+												   
+												   break;
+									case "000111":  //bgTz
+													if(task.getVal('V','j')>0)
+														task.setAddr(pc+ task.getAddr()/4) ;
+													else task.setAddr(pc++); 
+													task.stage=4;
+													
+													break;
+									//case "000100" : if()
+									
+												   
 								
+								}
 							}
 							
 						}
@@ -204,8 +236,8 @@ public class DisSim {
 						}
 						
 
-						
-						it = mem.get(++cc); // increment CCs, load next instruction
+						++cc;
+						//it = mem.get(++cc); // increment CCs, load next instruction
 
 					}
 					

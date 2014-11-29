@@ -1,6 +1,6 @@
 public class robEntry{
 	int type;			// instruction type
-	int destination;	// destination
+	long destination;	// destination
 	String op;
 	long value;			// value?
 	boolean ready;		// ready
