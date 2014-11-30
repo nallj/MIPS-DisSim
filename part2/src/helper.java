@@ -204,7 +204,7 @@ public ArrayList<instr> getMem(String inputfilename) throws IOException {
 		int opcode=Integer.parseInt(instructionParts[0], 2);
 		switch (opcode) {
         case 0: 
-        		
+        		// too many instructions have the 0 opcode, so im using typhold to save me some work in execution
         		if(instructionParts[5].equals("001101")){
 	        		broken=true;
 	        		file+="BREAK";
@@ -224,7 +224,7 @@ public ArrayList<instr> getMem(String inputfilename) throws IOException {
             		rt=Integer.parseInt(instructionParts[2], 2);
             		rd=Integer.parseInt(instructionParts[3], 2);
             		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 0; // FP
+            		typeHold = 6; // addu
             		//f1 = rs; f2 = rt; f3 = rd;
             		//b0 = ;
         		}
@@ -234,7 +234,7 @@ public ArrayList<instr> getMem(String inputfilename) throws IOException {
             		rt=Integer.parseInt(instructionParts[2], 2);
             		rd=Integer.parseInt(instructionParts[3],2);
             		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 0; // FP
+            		typeHold = 7; // FP
             		//b0 = ;
         		}
         		if(instructionParts[5].equals("100100")){
@@ -243,7 +243,7 @@ public ArrayList<instr> getMem(String inputfilename) throws IOException {
             		rt=Integer.parseInt(instructionParts[2], 2);
             		rd=Integer.parseInt(instructionParts[3],2);
             		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 0; // FP
+            		typeHold = 8; // FP
             		//b0 = ;
         		}
         		if(instructionParts[5].equals("100101")){
@@ -252,7 +252,7 @@ public ArrayList<instr> getMem(String inputfilename) throws IOException {
             		rt=Integer.parseInt(instructionParts[2], 2);
             		rd=Integer.parseInt(instructionParts[3],2);
             		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 0; // FP
+            		typeHold = 9; // FP
             		//b0 = ;
         		}
         		if(instructionParts[5].equals("100110")){
@@ -261,7 +261,7 @@ public ArrayList<instr> getMem(String inputfilename) throws IOException {
             		rt=Integer.parseInt(instructionParts[2], 2);
             		rd=Integer.parseInt(instructionParts[3],2);
             		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 0; // FP
+            		typeHold = 10; // FP
             		//b0 = ;
         		}
         		if(instructionParts[5].equals("100111")){
@@ -270,7 +270,7 @@ public ArrayList<instr> getMem(String inputfilename) throws IOException {
             		rt=Integer.parseInt(instructionParts[2], 2);
             		rd=Integer.parseInt(instructionParts[3],2);
             		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 0; // FP
+            		typeHold = 11; // FP
             		//b0 = ;
         		}
         		if(instructionParts[5].equals("100010")){
@@ -279,7 +279,7 @@ public ArrayList<instr> getMem(String inputfilename) throws IOException {
             		rt=Integer.parseInt(instructionParts[2], 2);
             		rd=Integer.parseInt(instructionParts[3],2);
             		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 0; // FP
+            		typeHold = 12; // FP
             		//b0 = ;
         		}
         		if(instructionParts[5].equals("100011")){
@@ -288,7 +288,7 @@ public ArrayList<instr> getMem(String inputfilename) throws IOException {
             		rt=Integer.parseInt(instructionParts[2], 2);
             		rd=Integer.parseInt(instructionParts[3],2);
             		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 0; // FP
+            		typeHold = 13; // FP
             		//b0 = ;
         		}
         		
@@ -300,7 +300,7 @@ public ArrayList<instr> getMem(String inputfilename) throws IOException {
             		if(rt!=0){
             			file+="SLL "; 
             			file+="R"+rd+", R"+rt+", #"+rs;
-            			typeHold = 1; // IM
+            			typeHold = 14; // IM
             		}
         		}
         		if(instructionParts[5].equals("000010")){
@@ -309,7 +309,7 @@ public ArrayList<instr> getMem(String inputfilename) throws IOException {
             		rt=Integer.parseInt(instructionParts[2], 2);
             		rd=Integer.parseInt(instructionParts[3],2);
             		file+="R"+rd+", R"+rt+", #"+rs;
-            		typeHold = 1; // IM
+            		typeHold = 15; // IM
         		}
         		if(instructionParts[5].equals("000011")){
         			file+="SRA ";
@@ -317,7 +317,7 @@ public ArrayList<instr> getMem(String inputfilename) throws IOException {
             		rt=Integer.parseInt(instructionParts[2], 2);
             		rd=Integer.parseInt(instructionParts[3],2);
             		file+="R"+rd+", R"+rt+", #"+rs;
-            		typeHold = 1; // IM
+            		typeHold = 16; // IM
         		}
         		if(instructionParts[5].equals("101010")){
         			file+="SLT ";
@@ -325,7 +325,7 @@ public ArrayList<instr> getMem(String inputfilename) throws IOException {
             		rt=Integer.parseInt(instructionParts[2], 2);
             		rd=Integer.parseInt(instructionParts[3],2);
             		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 0; // FP
+            		typeHold = 17; // FP
         		}
         		if(instructionParts[5].equals("101011")){
         			file+="SLTU ";
@@ -333,7 +333,7 @@ public ArrayList<instr> getMem(String inputfilename) throws IOException {
             		rt=Integer.parseInt(instructionParts[2], 2);
             		rd=Integer.parseInt(instructionParts[3],2);
             		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 0; // FP
+            		typeHold = 18; // FP
         		}
         		
         		

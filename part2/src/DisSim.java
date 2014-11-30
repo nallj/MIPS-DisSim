@@ -134,20 +134,21 @@ public class DisSim {
 														else  task.setAddr(pc++);
 													}
 													task.stage=4;
-													
+													rob.getIndex(task.robIndex).stage=4;
 													break;
 									case "101011":
 													task.setAddr(task.getVal('V','j')+task.getAddr());//store
 													if(rob.isDependent(task.getAddr(), task.robIndex))
 														break; //if dependent, then instruction must wait since store must be done in order
 													task.stage=4;
-													
+													rob.getIndex(task.robIndex).stage=4;
 													break;
 									case "100011": 
 													task.setAddr(task.getVal('V','j')+task.getAddr());//load
 													if(rob.isDependent(task.getAddr(), task.robIndex))
 														break; //if dependent, then instruction must wait
 													task.stage=3;
+													rob.getIndex(task.robIndex).stage=3;
 													break;
 									case "000010": task.stage=4; //jump address is already calculated
 												   rob.getIndex(task.robIndex).stage=4;
@@ -159,24 +160,103 @@ public class DisSim {
 														task.setAddr(pc+ task.getAddr()/4) ;
 													else task.setAddr(pc++); 
 													task.stage=4;
-													
+													rob.getIndex(task.robIndex).stage=4;
 													break;
 									case "000100" : if(task.getVal('V','j')==task.getVal('V','k')) //beq
 														task.setAddr(pc+ task.getAddr()/4) ;
 													else task.setAddr(pc++); 
-														task.stage=4;
+													task.stage=4;
+													rob.getIndex(task.robIndex).stage=4;
 									
 													break;
 									case "000101":	if(task.getVal('V','j')!=task.getVal('V','k')) //BNE
 														task.setAddr(pc+ task.getAddr()/4) ;
 													else task.setAddr(pc++); 
-														task.stage=4;
-					
+													task.stage=4;
+													rob.getIndex(task.robIndex).stage=4;	
 													break;
-									//case "000110": if
+									case "000110": 						//BLEZ
+													if(task.getVal('V','j')<=0)
+														task.setAddr(pc+ task.getAddr()/4) ;
+													else  task.setAddr(pc++);
+													task.stage=4;
+													rob.getIndex(task.robIndex).stage=4;
+													break;
+									case "001000"://ADDI
+													task.result=task.getVal('V','j')+task.getAddr();
+													task.stage=3;
+													rob.getIndex(task.robIndex).stage=3;
+													rob.getIndex(task.robIndex).value=task.result;
 													
-									
-												   
+													break;
+									case "001001"://ADDIU I assume that the ADDR/ value is unsigned
+												  task.result=task.getVal('V','j')+task.getAddr();
+												  task.stage=3;
+												  rob.getIndex(task.robIndex).stage=3;
+												  rob.getIndex(task.robIndex).value=task.result;
+										
+												  break;
+									// this opcode has a lot of instructions
+								    // john used the typehold in helper to save the decoding work 
+									case "000000": if(task.type==6 || task.type==7){//addu or add
+														task.result=task.getVal('V', 'j')+ task.getAddr();
+														task.stage=3;
+														rob.getIndex(task.robIndex).stage=3;
+												   }
+													else if(task.type==8){ //and
+														task.result=task.getVal('V', 'j') & task.getAddr();
+														task.stage=3;
+														rob.getIndex(task.robIndex).stage=3;
+													}
+													else if(task.type==9){ //or
+														task.result=task.getVal('V', 'j') | task.getAddr();
+														task.stage=3;
+														rob.getIndex(task.robIndex).stage=3;
+													}
+													else if(task.type==10){ //xor
+														task.result=task.getVal('V', 'j') ^ task.getAddr();
+														task.stage=3;
+														rob.getIndex(task.robIndex).stage=3;
+													}
+													else if(task.type==11){ //nor
+														task.result=~(task.getVal('V', 'j') | task.getAddr());
+														task.stage=3;
+														rob.getIndex(task.robIndex).stage=3;
+														
+													}
+													else if(task.type==12|| task.type==13){ //sub and subu
+														task.result=task.getVal('V', 'j') - task.getVal('V', 'k');
+														task.stage=3;
+														rob.getIndex(task.robIndex).stage=3;
+														
+													}
+													else if(task.type==14){ //sll
+														task.result=task.getVal('V', 'k') << task.getVal('V', 'j');
+														task.stage=3;
+														rob.getIndex(task.robIndex).stage=3;
+														
+														
+													}
+													else if(task.type==15){ //srl
+														task.result=task.getVal('V', 'k') >>> task.getVal('V', 'j');
+														task.stage=3;
+														rob.getIndex(task.robIndex).stage=3;
+													}
+													else if(task.type==16){//sra
+														task.result=task.getVal('V', 'k') >> task.getVal('V', 'j');
+														task.stage=3;
+														rob.getIndex(task.robIndex).stage=3;
+													}
+													else if(task.type==17|| task.type==18){//slt sltu
+														task.result=0;
+														if(  task.getVal('V', 'j')<task.getVal('V', 'k'))
+															task.result=1;
+															
+														task.stage=3;
+														rob.getIndex(task.robIndex).stage=3;
+													}
+													break;
+													
 								
 								}
 							}
