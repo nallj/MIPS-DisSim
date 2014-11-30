@@ -11,10 +11,15 @@ public class resSt{
 	}
 	
 	public boolean push(rsEntry e){
-		if(!isFull()){
-			table.add(e);
-			return true;
-		}else return false;
+		for(int i=0;i<table.size();i++){
+			if(!table.get(i).busy){
+				table.remove(i);
+				e.busy=true;
+				table.add(e);
+				return true;
+			}
+		}
+		return false;
 	}
 	
 
@@ -22,7 +27,6 @@ public class resSt{
 		for(int i=0; i< table.size(); i++){
 			if (A==table.get(i).A && table.get(i).stage==4)
 				table.get(i).busy=false;
-				
 		}
 	}
 	
@@ -57,5 +61,16 @@ public class resSt{
 		return full;
 	}
 	
+	public rsEntry get(int i){ return table.get(i);	 }
+	public int currSize(){ return table.size(); }
 	public int getMax(){ return max; }
+	
+	public void printData(){
+		System.out.println("\nRS:");
+		
+		for(int i = 0; i < max; i++){
+			System.out.print("[inst" + i + "]");
+			System.out.println(" " + table.get(i).display());
+		}
+	}
 }

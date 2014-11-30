@@ -197,147 +197,147 @@ public ArrayList<instr> getMem(String inputfilename) throws IOException {
         return instrArr;
 	}
 	
-	public boolean disassembleInstruction(String[] instructionParts, boolean print){
-		boolean broken=false;
-		//int rs,rt,rd=0;
-		String foo;
-		int opcode=Integer.parseInt(instructionParts[0], 2);
-		switch (opcode) {
-        case 0: 
-        		// too many instructions have the 0 opcode, so im using typhold to save me some work in execution
-        		if(instructionParts[5].equals("001101")){
-	        		broken=true;
-	        		file+="BREAK";
-	        		typeHold = 4; // N/A
-	        		//b0 = "001101";
+public boolean disassembleInstruction(String[] instructionParts, boolean print){
+	boolean broken=false;
+	//int rs,rt,rd=0;
+	String foo;
+	int opcode=Integer.parseInt(instructionParts[0], 2);
+	switch (opcode) {
+    case 0: 
+    		// too many instructions have the 0 opcode, so im using typhold to save me some work in execution
+    		if(instructionParts[5].equals("001101")){
+        		broken=true;
+        		file+="BREAK";
+        		typeHold = 4; // N/A
+        		//b0 = "001101";
+    		}
+    		if(instructionParts[5].equals("000000") && instructionParts[2].equals("00000")){
+    			rd=Integer.parseInt(instructionParts[3],2);
+    			if(rd==0)
+    			file+="NOP";
+    			typeHold = 4; // N/A
+    			//b0 = "000000";
+    		}
+    		if(instructionParts[5].equals("100001")){
+    			file+="ADDU ";
+    			rs=Integer.parseInt(instructionParts[1], 2);
+        		rt=Integer.parseInt(instructionParts[2], 2);
+        		rd=Integer.parseInt(instructionParts[3], 2);
+        		file+="R"+rd+", R"+rs+", R"+rt;
+        		typeHold = 6; // addu
+        		//f1 = rs; f2 = rt; f3 = rd;
+        		//b0 = ;
+    		}
+    		if(instructionParts[5].equals("100000")){
+    			file+="ADD ";
+    			rs=Integer.parseInt(instructionParts[1], 2);
+        		rt=Integer.parseInt(instructionParts[2], 2);
+        		rd=Integer.parseInt(instructionParts[3],2);
+        		file+="R"+rd+", R"+rs+", R"+rt;
+        		typeHold = 7; // FP
+        		//b0 = ;
+    		}
+    		if(instructionParts[5].equals("100100")){
+    			file+="AND ";
+    			rs=Integer.parseInt(instructionParts[1], 2);
+        		rt=Integer.parseInt(instructionParts[2], 2);
+        		rd=Integer.parseInt(instructionParts[3],2);
+        		file+="R"+rd+", R"+rs+", R"+rt;
+        		typeHold = 8; // FP
+        		//b0 = ;
+    		}
+    		if(instructionParts[5].equals("100101")){
+    			file+="OR ";
+    			rs=Integer.parseInt(instructionParts[1], 2);
+        		rt=Integer.parseInt(instructionParts[2], 2);
+        		rd=Integer.parseInt(instructionParts[3],2);
+        		file+="R"+rd+", R"+rs+", R"+rt;
+        		typeHold = 9; // FP
+        		//b0 = ;
+    		}
+    		if(instructionParts[5].equals("100110")){
+    			file+="XOR ";
+    			rs=Integer.parseInt(instructionParts[1], 2);
+        		rt=Integer.parseInt(instructionParts[2], 2);
+        		rd=Integer.parseInt(instructionParts[3],2);
+        		file+="R"+rd+", R"+rs+", R"+rt;
+        		typeHold = 10; // FP
+        		//b0 = ;
+    		}
+    		if(instructionParts[5].equals("100111")){
+    			file+="NOR ";
+    			rs=Integer.parseInt(instructionParts[1], 2);
+        		rt=Integer.parseInt(instructionParts[2], 2);
+        		rd=Integer.parseInt(instructionParts[3],2);
+        		file+="R"+rd+", R"+rs+", R"+rt;
+        		typeHold = 11; // FP
+        		//b0 = ;
+    		}
+    		if(instructionParts[5].equals("100010")){
+    			file+="SUB ";
+    			rs=Integer.parseInt(instructionParts[1], 2);
+        		rt=Integer.parseInt(instructionParts[2], 2);
+        		rd=Integer.parseInt(instructionParts[3],2);
+        		file+="R"+rd+", R"+rs+", R"+rt;
+        		typeHold = 12; // FP
+        		//b0 = ;
+    		}
+    		if(instructionParts[5].equals("100011")){
+    			file+="SUBU ";
+    			rs=Integer.parseInt(instructionParts[1], 2);
+        		rt=Integer.parseInt(instructionParts[2], 2);
+        		rd=Integer.parseInt(instructionParts[3],2);
+        		file+="R"+rd+", R"+rs+", R"+rt;
+        		typeHold = 13; // FP
+        		//b0 = ;
+    		}
+    		
+    		if(instructionParts[5].equals("000000")){
+    			
+    			rs=Integer.parseInt(instructionParts[4], 2);
+        		rt=Integer.parseInt(instructionParts[2], 2);
+        		rd=Integer.parseInt(instructionParts[3],2);
+        		if(rt!=0){
+        			file+="SLL "; 
+        			file+="R"+rd+", R"+rt+", #"+rs;
+        			typeHold = 14; // IM
         		}
-        		if(instructionParts[5].equals("000000") && instructionParts[2].equals("00000")){
-        			rd=Integer.parseInt(instructionParts[3],2);
-        			if(rd==0)
-        			file+="NOP";
-        			typeHold = 4; // N/A
-        			//b0 = "000000";
-        		}
-        		if(instructionParts[5].equals("100001")){
-        			file+="ADDU ";
-        			rs=Integer.parseInt(instructionParts[1], 2);
-            		rt=Integer.parseInt(instructionParts[2], 2);
-            		rd=Integer.parseInt(instructionParts[3], 2);
-            		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 6; // addu
-            		//f1 = rs; f2 = rt; f3 = rd;
-            		//b0 = ;
-        		}
-        		if(instructionParts[5].equals("100000")){
-        			file+="ADD ";
-        			rs=Integer.parseInt(instructionParts[1], 2);
-            		rt=Integer.parseInt(instructionParts[2], 2);
-            		rd=Integer.parseInt(instructionParts[3],2);
-            		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 7; // FP
-            		//b0 = ;
-        		}
-        		if(instructionParts[5].equals("100100")){
-        			file+="AND ";
-        			rs=Integer.parseInt(instructionParts[1], 2);
-            		rt=Integer.parseInt(instructionParts[2], 2);
-            		rd=Integer.parseInt(instructionParts[3],2);
-            		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 8; // FP
-            		//b0 = ;
-        		}
-        		if(instructionParts[5].equals("100101")){
-        			file+="OR ";
-        			rs=Integer.parseInt(instructionParts[1], 2);
-            		rt=Integer.parseInt(instructionParts[2], 2);
-            		rd=Integer.parseInt(instructionParts[3],2);
-            		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 9; // FP
-            		//b0 = ;
-        		}
-        		if(instructionParts[5].equals("100110")){
-        			file+="XOR ";
-        			rs=Integer.parseInt(instructionParts[1], 2);
-            		rt=Integer.parseInt(instructionParts[2], 2);
-            		rd=Integer.parseInt(instructionParts[3],2);
-            		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 10; // FP
-            		//b0 = ;
-        		}
-        		if(instructionParts[5].equals("100111")){
-        			file+="NOR ";
-        			rs=Integer.parseInt(instructionParts[1], 2);
-            		rt=Integer.parseInt(instructionParts[2], 2);
-            		rd=Integer.parseInt(instructionParts[3],2);
-            		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 11; // FP
-            		//b0 = ;
-        		}
-        		if(instructionParts[5].equals("100010")){
-        			file+="SUB ";
-        			rs=Integer.parseInt(instructionParts[1], 2);
-            		rt=Integer.parseInt(instructionParts[2], 2);
-            		rd=Integer.parseInt(instructionParts[3],2);
-            		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 12; // FP
-            		//b0 = ;
-        		}
-        		if(instructionParts[5].equals("100011")){
-        			file+="SUBU ";
-        			rs=Integer.parseInt(instructionParts[1], 2);
-            		rt=Integer.parseInt(instructionParts[2], 2);
-            		rd=Integer.parseInt(instructionParts[3],2);
-            		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 13; // FP
-            		//b0 = ;
-        		}
-        		
-        		if(instructionParts[5].equals("000000")){
-        			
-        			rs=Integer.parseInt(instructionParts[4], 2);
-            		rt=Integer.parseInt(instructionParts[2], 2);
-            		rd=Integer.parseInt(instructionParts[3],2);
-            		if(rt!=0){
-            			file+="SLL "; 
-            			file+="R"+rd+", R"+rt+", #"+rs;
-            			typeHold = 14; // IM
-            		}
-        		}
-        		if(instructionParts[5].equals("000010")){
-        			file+="SRL ";
-        			rs=Integer.parseInt(instructionParts[4], 2);
-            		rt=Integer.parseInt(instructionParts[2], 2);
-            		rd=Integer.parseInt(instructionParts[3],2);
-            		file+="R"+rd+", R"+rt+", #"+rs;
-            		typeHold = 15; // IM
-        		}
-        		if(instructionParts[5].equals("000011")){
-        			file+="SRA ";
-        			rs=Integer.parseInt(instructionParts[4], 2);
-            		rt=Integer.parseInt(instructionParts[2], 2);
-            		rd=Integer.parseInt(instructionParts[3],2);
-            		file+="R"+rd+", R"+rt+", #"+rs;
-            		typeHold = 16; // IM
-        		}
-        		if(instructionParts[5].equals("101010")){
-        			file+="SLT ";
-        			rs=Integer.parseInt(instructionParts[1], 2);
-            		rt=Integer.parseInt(instructionParts[2], 2);
-            		rd=Integer.parseInt(instructionParts[3],2);
-            		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 17; // FP
-        		}
-        		if(instructionParts[5].equals("101011")){
-        			file+="SLTU ";
-        			rs=Integer.parseInt(instructionParts[1], 2);
-            		rt=Integer.parseInt(instructionParts[2], 2);
-            		rd=Integer.parseInt(instructionParts[3],2);
-            		file+="R"+rd+", R"+rs+", R"+rt;
-            		typeHold = 18; // FP
-        		}
-        		
-        		
-                break;
+    		}
+    		if(instructionParts[5].equals("000010")){
+    			file+="SRL ";
+    			rs=Integer.parseInt(instructionParts[4], 2);
+        		rt=Integer.parseInt(instructionParts[2], 2);
+        		rd=Integer.parseInt(instructionParts[3],2);
+        		file+="R"+rd+", R"+rt+", #"+rs;
+        		typeHold = 15; // IM
+    		}
+    		if(instructionParts[5].equals("000011")){
+    			file+="SRA ";
+    			rs=Integer.parseInt(instructionParts[4], 2);
+        		rt=Integer.parseInt(instructionParts[2], 2);
+        		rd=Integer.parseInt(instructionParts[3],2);
+        		file+="R"+rd+", R"+rt+", #"+rs;
+        		typeHold = 16; // IM
+    		}
+    		if(instructionParts[5].equals("101010")){
+    			file+="SLT ";
+    			rs=Integer.parseInt(instructionParts[1], 2);
+        		rt=Integer.parseInt(instructionParts[2], 2);
+        		rd=Integer.parseInt(instructionParts[3],2);
+        		file+="R"+rd+", R"+rs+", R"+rt;
+        		typeHold = 17; // FP
+    		}
+    		if(instructionParts[5].equals("101011")){
+    			file+="SLTU ";
+    			rs=Integer.parseInt(instructionParts[1], 2);
+        		rt=Integer.parseInt(instructionParts[2], 2);
+        		rd=Integer.parseInt(instructionParts[3],2);
+        		file+="R"+rd+", R"+rs+", R"+rt;
+        		typeHold = 18; // FP
+    		}
+    		
+    		
+            break;
                 
         case 8: file+="ADDI ";
         		 rs=Integer.parseInt(instructionParts[1], 2);

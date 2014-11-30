@@ -6,8 +6,9 @@ import java.util.ArrayList;
 public class DisSim {
 	static boolean DIAG = true;
 	
-	public static void main(String[] args) {
-		System.out.println(args);
+	public static void main(String[] args){
+		if(DIAG) System.out.println("args: "+ java.util.Arrays.toString(args));
+		
 		if (args.length>1 && !args[1].equals(null))
 			
 			if (args[0].equals("dis")) // run Disassembler
@@ -41,22 +42,24 @@ public class DisSim {
 					boolean stall;
 					instr it = mem.get(0);
 					int cc = 0, pc = 0;
-					
+					stall = false;
 					while(true){ // loop through Clock Cycles independent of PC value 
 						if(DIAG) System.out.print(cc + ") ");
 						
 						it.printInstr();
-						stall = false;
 						
+						System.out.println("stall="+stall);
 						//   I. IF : Instruction Fetch
 						if(cc < mem.size() && !stall) {
 							it = mem.get(pc+1);
 							iq.push(it);	
 						}
 							
-						
+						System.out.println("!robisfull="+!rob.isFull());
+						System.out.println("!rsisfull="+!rs.isFull());
+						//System.out.println("iq.kick="+!iq.kick());
 						//  II. ID : Decode & Issue
-						if(!rob.isFull() && !rs.isFull()&& !iq.kick() && !stall){ // if IQ has instruction and ROB and RS are ready, else stall
+						if(!rob.isFull() && !rs.isFull() && !stall){ // if IQ has instruction and ROB and RS are ready, else stall
 							// send operands to RS if any are available in Regs or ROB
 							// send future calculation's id to relevant RS operand slot so it can be found upon completion
 							instr instruction=iq.pop();
@@ -74,6 +77,7 @@ public class DisSim {
 										that gets handled when the branch passes through EX stage	*/ 
 									iq.pop();
 									stall=true;
+									System.out.println("ID branch stall="+stall);
 								}
 								
 								robEntry br = new robEntry(instruction.getOp(), 2);	// new ROB extry @ execute stage
@@ -99,7 +103,11 @@ public class DisSim {
 							
 				
 						
-						}else stall = true;
+						}
+						else {
+							stall = true;
+							System.out.println("ID stall="+stall);
+						}
 						
 						//end IF ID
 						
@@ -134,21 +142,20 @@ public class DisSim {
 														else  task.setAddr(pc++);
 													}
 													task.stage=4;
-													rob.getIndex(task.robIndex).stage=4;
+													
 													break;
 									case "101011":
 													task.setAddr(task.getVal('V','j')+task.getAddr());//store
 													if(rob.isDependent(task.getAddr(), task.robIndex))
 														break; //if dependent, then instruction must wait since store must be done in order
 													task.stage=4;
-													rob.getIndex(task.robIndex).stage=4;
+													
 													break;
 									case "100011": 
 													task.setAddr(task.getVal('V','j')+task.getAddr());//load
 													if(rob.isDependent(task.getAddr(), task.robIndex))
 														break; //if dependent, then instruction must wait
 													task.stage=3;
-													rob.getIndex(task.robIndex).stage=3;
 													break;
 									case "000010": task.stage=4; //jump address is already calculated
 												   rob.getIndex(task.robIndex).stage=4;
@@ -160,103 +167,24 @@ public class DisSim {
 														task.setAddr(pc+ task.getAddr()/4) ;
 													else task.setAddr(pc++); 
 													task.stage=4;
-													rob.getIndex(task.robIndex).stage=4;
+													
 													break;
 									case "000100" : if(task.getVal('V','j')==task.getVal('V','k')) //beq
 														task.setAddr(pc+ task.getAddr()/4) ;
 													else task.setAddr(pc++); 
-													task.stage=4;
-													rob.getIndex(task.robIndex).stage=4;
+														task.stage=4;
 									
 													break;
 									case "000101":	if(task.getVal('V','j')!=task.getVal('V','k')) //BNE
 														task.setAddr(pc+ task.getAddr()/4) ;
 													else task.setAddr(pc++); 
-													task.stage=4;
-													rob.getIndex(task.robIndex).stage=4;	
+														task.stage=4;
+					
 													break;
-									case "000110": 						//BLEZ
-													if(task.getVal('V','j')<=0)
-														task.setAddr(pc+ task.getAddr()/4) ;
-													else  task.setAddr(pc++);
-													task.stage=4;
-													rob.getIndex(task.robIndex).stage=4;
-													break;
-									case "001000"://ADDI
-													task.result=task.getVal('V','j')+task.getAddr();
-													task.stage=3;
-													rob.getIndex(task.robIndex).stage=3;
-													rob.getIndex(task.robIndex).value=task.result;
+									//case "000110": if
 													
-													break;
-									case "001001"://ADDIU I assume that the ADDR/ value is unsigned
-												  task.result=task.getVal('V','j')+task.getAddr();
-												  task.stage=3;
-												  rob.getIndex(task.robIndex).stage=3;
-												  rob.getIndex(task.robIndex).value=task.result;
-										
-												  break;
-									// this opcode has a lot of instructions
-								    // john used the typehold in helper to save the decoding work 
-									case "000000": if(task.type==6 || task.type==7){//addu or add
-														task.result=task.getVal('V', 'j')+ task.getAddr();
-														task.stage=3;
-														rob.getIndex(task.robIndex).stage=3;
-												   }
-													else if(task.type==8){ //and
-														task.result=task.getVal('V', 'j') & task.getAddr();
-														task.stage=3;
-														rob.getIndex(task.robIndex).stage=3;
-													}
-													else if(task.type==9){ //or
-														task.result=task.getVal('V', 'j') | task.getAddr();
-														task.stage=3;
-														rob.getIndex(task.robIndex).stage=3;
-													}
-													else if(task.type==10){ //xor
-														task.result=task.getVal('V', 'j') ^ task.getAddr();
-														task.stage=3;
-														rob.getIndex(task.robIndex).stage=3;
-													}
-													else if(task.type==11){ //nor
-														task.result=~(task.getVal('V', 'j') | task.getAddr());
-														task.stage=3;
-														rob.getIndex(task.robIndex).stage=3;
-														
-													}
-													else if(task.type==12|| task.type==13){ //sub and subu
-														task.result=task.getVal('V', 'j') - task.getVal('V', 'k');
-														task.stage=3;
-														rob.getIndex(task.robIndex).stage=3;
-														
-													}
-													else if(task.type==14){ //sll
-														task.result=task.getVal('V', 'k') << task.getVal('V', 'j');
-														task.stage=3;
-														rob.getIndex(task.robIndex).stage=3;
-														
-														
-													}
-													else if(task.type==15){ //srl
-														task.result=task.getVal('V', 'k') >>> task.getVal('V', 'j');
-														task.stage=3;
-														rob.getIndex(task.robIndex).stage=3;
-													}
-													else if(task.type==16){//sra
-														task.result=task.getVal('V', 'k') >> task.getVal('V', 'j');
-														task.stage=3;
-														rob.getIndex(task.robIndex).stage=3;
-													}
-													else if(task.type==17|| task.type==18){//slt sltu
-														task.result=0;
-														if(  task.getVal('V', 'j')<task.getVal('V', 'k'))
-															task.result=1;
-															
-														task.stage=3;
-														rob.getIndex(task.robIndex).stage=3;
-													}
-													break;
-													
+									
+												   
 								
 								}
 							}
@@ -329,8 +257,18 @@ public class DisSim {
 						}
 						
 
-						++cc;
-						//it = mem.get(++cc); // increment CCs, load next instruction
+						//if(DIAG) System.out.println("size of mem is = " + mem.size());
+						if(cc < mem.size()-1) it = mem.get(++cc); // increment CCs, load next instruction
+						else ++cc;	//if all instructions are past issue, continue until final break
+						
+						if(DIAG && cc == 39) break; // currently, loop is out of control
+						
+						System.out.println("Cycle <" + (cc-1) + ">");
+						iq.printData(); // print IQ entries
+						rs.printData(); // print RS entries
+						rob.printData(); // print ROB entries
+						// print register
+						// data segment
 
 					}
 					

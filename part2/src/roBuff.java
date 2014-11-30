@@ -12,10 +12,7 @@ public class roBuff{
 		fifo = new ArrayList<robEntry>();						// initialize table list
 	}
 	
-
 	public int push(robEntry e){
-		
-			
 			fifo.add(e);
 			return fifo.size();
 	}
@@ -40,22 +37,20 @@ public class roBuff{
 		}
 		
 		return dependent;
-		
 	}
-	
 	
 	public boolean isCommit(){
-		robEntry head=fifo.get(0);
-		if(head!=null && head.stage==4){
-			return true;
-		}
-		return false;
-		
-		
+		if(fifo.size() > 0){
+			robEntry head=fifo.get(0);
+			if(head!=null && head.stage==4){
+				return true;
+			}
+			return false;
+		}else return false;
 	}
-	public robEntry pop(){
-		return fifo.get(0);
-	}
+	
+	public robEntry pop(){ return fifo.get(0); }
+	
 	public boolean kick(){
 		if(fifo.get(fifo.size()-1) != null){
 			if(fifo.size() == 0) finished = true;	// if you commit the final instruction, we're done
@@ -69,4 +64,29 @@ public class roBuff{
 	}
 	
 	public boolean isDone(){ return finished; }
+	
+	public void printData(){
+		System.out.println("\nROB:");
+		ArrayList<robEntry> temp = new ArrayList<robEntry>();
+		
+		for(int i = 0; i < fifo.size(); i++){
+			System.out.print("[inst" + i + "]");
+			System.out.println(" " + fifo.get(i).display());
+			
+			
+		}
+		
+	}
+	
+	public robEntry moveFifo(){
+		robEntry r = fifo.get(0);
+		
+		fifo.remove(0);
+		for(int i = 0; i < fifo.size() - 2; i++){
+			fifo.add(i, fifo.get(i + 1));
+		}
+		fifo.remove(fifo.size() - 1);
+		
+		return r;
+	}
 }

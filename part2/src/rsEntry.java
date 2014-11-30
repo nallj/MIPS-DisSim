@@ -1,12 +1,12 @@
 public class rsEntry{
 	boolean busy = false;	// busy?
 
-	int robIndex;	
-	int stage;     // issue=1 execute=2 memory=3 commit=4
-	String op;       //opcode for execute stage
-	long Vj;					// Vj : value of operand j
-	int type      ; // instruction type 2= branch 4 nop/break   //special codes 6+
+	int robIndex;
+	int stage;				// issue=1 execute=2 memory=3 commit=4
+	String op;				//opcode for execute stage
+	int type;				// instruction type 2= branch 4 nop/break   //special codes 6+
 	
+	long Vj;				// Vj : value of operand j
 	boolean VjSrc;			// Vj : whether Vj is set or not
 	
 	long Vk;				// Vk : value of operand k
@@ -20,8 +20,9 @@ public class rsEntry{
 	
 	long A;		// address offset for load store in ID, holds effective address after execution
 	long result;
+	
 	public rsEntry(){
-		busy = true; 
+		busy = false; 
 		VjSrc=false;
 		VkSrc=false;
 	}
@@ -30,7 +31,7 @@ public class rsEntry{
 		op = o;
 		robIndex = r;
 		this.stage=stage;
-		busy = true; 
+		busy = false; 
 		VjSrc=false;
 		VkSrc=false;
 	}
@@ -44,6 +45,7 @@ public class rsEntry{
 	public void setAddr(long a){ A = a; }
 	
 	// getters
+	public boolean isBusy(){ return busy; }
 	public String getOp(){ return op; }
 	public long getAddr(){ return A; }
 	public long getVal(char o, char t){
@@ -69,5 +71,18 @@ public class rsEntry{
 		return r;
 	}
 	
-	public boolean isBusy(){ return busy; }
+	public String display(){
+		String disp = "Busy: ";
+		
+		if(busy) disp += "Yes  ";
+		else disp += "No   ";
+		
+		disp += op + "     ";	// display op
+		disp += "Vj: #" + Long.toHexString(Vj) + "   ";
+		disp += "Vk: #" + Long.toHexString(Vk) + "   ";
+		disp += "Qj: #" + Long.toHexString(Qj) + "   ";
+		disp += "Qk: #" + Long.toHexString(Qk);
+		
+		return disp;
+	}
 }
